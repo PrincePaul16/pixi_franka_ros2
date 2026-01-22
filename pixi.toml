@@ -15,6 +15,7 @@ cmake = "*"
 pkg-config = "*"
 make = "*"
 ninja = "*"
+mujoco = ">=3.3.2,<4"
 
 [target.linux.dependencies]
 libgl-devel = "*"
@@ -55,6 +56,7 @@ build = "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release 
 clone-crisp = "git clone https://github.com/utiasdsl/crisp_controllers.git src/crisp_controllers"
 setup = { depends-on = ["clone", "update-libfranka", "apply-patches", "ignore-gazebo", "build"] }
 franka = "ros2 launch scripts/launch/franka.launch.py"
+franka-sim = "ros2 launch franka_ros2_pixi franka_mujoco.launch.py"
 
 [feature.crisp.tasks]
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
