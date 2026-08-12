@@ -20,8 +20,6 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 
 find_package(mujoco REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(OpenGL REQUIRED)
 
 # --------------------------------------------------------------------------------
 # Make sure that library relocation works for both build and install.
@@ -76,8 +74,6 @@ target_include_directories(mujoco_simulator PUBLIC
 
 target_link_libraries(mujoco_simulator PUBLIC
         mujoco::mujoco
-        glfw
-        OpenGL::GL
 )
 
 ament_target_dependencies(mujoco_simulator PUBLIC

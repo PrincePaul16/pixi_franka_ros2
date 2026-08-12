@@ -63,7 +63,7 @@
         - fr3_joint6
         - fr3_joint7
 
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
 
   pose_broadcaster:
@@ -77,7 +77,7 @@
         - fr3_joint6
         - fr3_joint7
 
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
 
   gravity_compensation:
@@ -91,7 +91,7 @@
         - fr3_joint6
         - fr3_joint7
 
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
 
       task:
@@ -120,7 +120,7 @@
         - fr3_joint6
         - fr3_joint7
 
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
 
       task:
@@ -166,7 +166,7 @@
         - fr3_joint6
         - fr3_joint7
 
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
 
       filter:
@@ -204,7 +204,7 @@
         - fr3_joint6
         - fr3_joint7
       
-      end_effector_frame: fr3_hand_tcp
+      end_effector_frame: fr3_flange_key_tcp
       base_frame: base
       
       k_fb: 0.6

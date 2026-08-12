@@ -1,9 +1,13 @@
 <mujoco model="fr3 scene">
   <include file="fr3.xml"/>
-  <!-- Remove gravity and add a ground plane. -->
-  <option gravity="0 0 0"/>
 
-  <statistic center="0.2 0 0.4" extent=".8"/>
+  <option gravity="0 0 0" integrator="implicit" timestep="0.002"/>
+
+  <!-- <statistic center="0.2 0 0.4" extent=".8"/> -->
+
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+
+  <statistic center="0.3 0 0.4" extent="1"/>
 
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
@@ -11,15 +15,390 @@
     <global azimuth="120" elevation="-20"/>
   </visual>
 
+  <default>
+    <default class="vention">
+      <geom conaffinity="0" contype="0" group="1"/>
+      <default class="vention_collision">
+        <geom conaffinity="1" condim="3" contype="0" group="4" margin="0.001" rgba=".4 .5 .6 1"
+              solref="0.005 1" solimp="0.99 0.999 0.0005 0.5 2"/>
+      </default>
+    </default>
+
+    <default class="tangram">
+      <joint armature="1" damping="1"/>
+      <geom contype="1" conaffinity="1" friction="1 0.1 0.1"/>
+    </default>
+    <default class="tangram_visual">
+      <geom contype="0" conaffinity="0" group="2" mass="0"/>   <!-- visual only; collision parts carry the mass -->
+    </default>
+    <default class="tangram_collision">
+      <geom contype="1" conaffinity="1" group="3" rgba="0.1 0.6 0.1 0.5"/>
+    </default>
+  </default>
+
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
     <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
       markrgb="0.8 0.8 0.8" width="300" height="300"/>
     <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+
+    <!-- Vention materials -->
+    <material name="vention_white" rgba="1.0 1.0 1.0 1"  reflectance="1"  shininess=".1"/>
+    <material name="vention_black" rgba="0.05 0.05 0.1 1" reflectance="1"  shininess=".5"/>
+    <material name="vention_blue"  rgba=".14 .30 .52 1"  reflectance="10" shininess=".1"/>
+    <material name="my_object" reflectance="1" shininess=".1"/>
+
+    <!-- Tangram piece meshes (convex; single geom serves visual + collision) -->
+    <mesh name="big_triangle_1"   file="tangram_robot/big_triangle_1.stl"   scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2"   file="tangram_robot/big_triangle_2.stl"   scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle"  file="tangram_robot/middle_triangle.stl"  scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1" file="tangram_robot/small_triangle_1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2" file="tangram_robot/small_triangle_2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square"           file="tangram_robot/square.stl"           scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram"    file="tangram_robot/parallelogram.stl"    scale="0.001 0.001 0.001"/>
+
+    <mesh name="big_triangle_1_c0" file="tangram_robot/big_triangle_1_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c1" file="tangram_robot/big_triangle_1_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c2" file="tangram_robot/big_triangle_1_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c3" file="tangram_robot/big_triangle_1_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c4" file="tangram_robot/big_triangle_1_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c5" file="tangram_robot/big_triangle_1_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c6" file="tangram_robot/big_triangle_1_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c7" file="tangram_robot/big_triangle_1_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c8" file="tangram_robot/big_triangle_1_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c9" file="tangram_robot/big_triangle_1_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c10" file="tangram_robot/big_triangle_1_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c11" file="tangram_robot/big_triangle_1_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c12" file="tangram_robot/big_triangle_1_c12.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c13" file="tangram_robot/big_triangle_1_c13.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c14" file="tangram_robot/big_triangle_1_c14.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_1_c15" file="tangram_robot/big_triangle_1_c15.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="big_triangle_2_c0" file="tangram_robot/big_triangle_2_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c1" file="tangram_robot/big_triangle_2_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c2" file="tangram_robot/big_triangle_2_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c3" file="tangram_robot/big_triangle_2_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c4" file="tangram_robot/big_triangle_2_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c5" file="tangram_robot/big_triangle_2_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c6" file="tangram_robot/big_triangle_2_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c7" file="tangram_robot/big_triangle_2_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c8" file="tangram_robot/big_triangle_2_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c9" file="tangram_robot/big_triangle_2_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c10" file="tangram_robot/big_triangle_2_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c11" file="tangram_robot/big_triangle_2_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c12" file="tangram_robot/big_triangle_2_c12.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="big_triangle_2_c13" file="tangram_robot/big_triangle_2_c13.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="middle_triangle_c0" file="tangram_robot/middle_triangle_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle_c1" file="tangram_robot/middle_triangle_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle_c2" file="tangram_robot/middle_triangle_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle_c3" file="tangram_robot/middle_triangle_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle_c4" file="tangram_robot/middle_triangle_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="middle_triangle_c5" file="tangram_robot/middle_triangle_c5.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="small_triangle_1_c0" file="tangram_robot/small_triangle_1_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c1" file="tangram_robot/small_triangle_1_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c2" file="tangram_robot/small_triangle_1_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c3" file="tangram_robot/small_triangle_1_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c4" file="tangram_robot/small_triangle_1_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c5" file="tangram_robot/small_triangle_1_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c6" file="tangram_robot/small_triangle_1_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c7" file="tangram_robot/small_triangle_1_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c8" file="tangram_robot/small_triangle_1_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c9" file="tangram_robot/small_triangle_1_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c10" file="tangram_robot/small_triangle_1_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c11" file="tangram_robot/small_triangle_1_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c12" file="tangram_robot/small_triangle_1_c12.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c13" file="tangram_robot/small_triangle_1_c13.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c14" file="tangram_robot/small_triangle_1_c14.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c15" file="tangram_robot/small_triangle_1_c15.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c16" file="tangram_robot/small_triangle_1_c16.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c17" file="tangram_robot/small_triangle_1_c17.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c18" file="tangram_robot/small_triangle_1_c18.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c19" file="tangram_robot/small_triangle_1_c19.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_1_c20" file="tangram_robot/small_triangle_1_c20.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="small_triangle_2_c0" file="tangram_robot/small_triangle_2_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c1" file="tangram_robot/small_triangle_2_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c2" file="tangram_robot/small_triangle_2_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c3" file="tangram_robot/small_triangle_2_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c4" file="tangram_robot/small_triangle_2_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c5" file="tangram_robot/small_triangle_2_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c6" file="tangram_robot/small_triangle_2_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c7" file="tangram_robot/small_triangle_2_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c8" file="tangram_robot/small_triangle_2_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c9" file="tangram_robot/small_triangle_2_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c10" file="tangram_robot/small_triangle_2_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c11" file="tangram_robot/small_triangle_2_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c12" file="tangram_robot/small_triangle_2_c12.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c13" file="tangram_robot/small_triangle_2_c13.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c14" file="tangram_robot/small_triangle_2_c14.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c15" file="tangram_robot/small_triangle_2_c15.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c16" file="tangram_robot/small_triangle_2_c16.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="small_triangle_2_c17" file="tangram_robot/small_triangle_2_c17.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="square_c0" file="tangram_robot/square_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c1" file="tangram_robot/square_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c2" file="tangram_robot/square_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c3" file="tangram_robot/square_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c4" file="tangram_robot/square_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c5" file="tangram_robot/square_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c6" file="tangram_robot/square_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c7" file="tangram_robot/square_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c8" file="tangram_robot/square_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c9" file="tangram_robot/square_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c10" file="tangram_robot/square_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c11" file="tangram_robot/square_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="square_c12" file="tangram_robot/square_c12.stl" scale="0.001 0.001 0.001"/>
+
+    <mesh name="parallelogram_c0" file="tangram_robot/parallelogram_c0.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c1" file="tangram_robot/parallelogram_c1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c2" file="tangram_robot/parallelogram_c2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c3" file="tangram_robot/parallelogram_c3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c4" file="tangram_robot/parallelogram_c4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c5" file="tangram_robot/parallelogram_c5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c6" file="tangram_robot/parallelogram_c6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c7" file="tangram_robot/parallelogram_c7.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c8" file="tangram_robot/parallelogram_c8.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c9" file="tangram_robot/parallelogram_c9.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c10" file="tangram_robot/parallelogram_c10.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c11" file="tangram_robot/parallelogram_c11.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c12" file="tangram_robot/parallelogram_c12.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c13" file="tangram_robot/parallelogram_c13.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c14" file="tangram_robot/parallelogram_c14.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c15" file="tangram_robot/parallelogram_c15.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="parallelogram_c16" file="tangram_robot/parallelogram_c16.stl" scale="0.001 0.001 0.001"/>
   </asset>
 
   <worldbody>
-    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
-    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <body name="vention_table" childclass="vention" pos="0 0 0" quat="0.7071 0 0 -0.7071">
+      <!-- leg floor pads -->
+      <geom type="cylinder" size="0.040 0.010" pos="-.585 -.383 0.010" material="vention_black"/>
+      <geom type="cylinder" size="0.040 0.010" pos="0.585 -.383 0.010" material="vention_black"/>
+      <geom type="cylinder" size="0.040 0.010" pos="-.585 0.383 0.010" material="vention_black"/>
+      <geom type="cylinder" size="0.040 0.010" pos="0.585 0.383 0.010" material="vention_black"/>
+
+      <!-- leg pad stems -->
+      <geom type="cylinder" size="0.010 0.020" pos="-.585 -.383 0.030" rgba=".5 .5 .5 1"/>
+      <geom type="cylinder" size="0.010 0.020" pos="0.585 -.383 0.030" rgba=".5 .5 .5 1"/>
+      <geom type="cylinder" size="0.010 0.020" pos="-.585 0.383 0.030" rgba=".5 .5 .5 1"/>
+      <geom type="cylinder" size="0.010 0.020" pos="0.585 0.383 0.030" rgba=".5 .5 .5 1"/>
+
+      <!-- legs -->
+      <geom type="box" size="0.023 0.023 .387" pos="-.585 -.383 0.435" material="vention_blue"/>
+      <geom type="box" size="0.023 0.023 .387" pos="0.585 -.383 0.435" material="vention_blue"/>
+      <geom type="box" size="0.023 0.023 .387" pos="-.585 0.383 0.435" material="vention_blue"/>
+      <geom type="box" size="0.023 0.023 .387" pos="0.585 0.383 0.435" material="vention_blue"/>
+
+      <!-- middle legs -->
+      <geom type="box" size="0.023 0.023 .337" pos="0 0.377 0.440" material="vention_blue"/>
+      <geom type="box" size="0.023 0.023 .337" pos="0 -.377 0.440" material="vention_blue"/>
+
+      <!-- top board -->
+      <geom type="box" size="0.612 0.409 0.023" pos="0 0 0.801" material="vention_white"/>
+      <!-- <geom type="box" size="0.55 0.35 0.001"   pos="0.0 0.025 0.825" material="vention_white"/> -->
+      <geom type="box" size="0.2 0.1 0.023"     pos="0 -0.513 0.801" material="vention_black"/>
+      <geom type="box" size="0.202 0.102 0.023" pos="0 -0.513 0.790" material="vention_blue"/>
+      <geom type="box" size="0.023 0.15 0.023"  pos="0 -0.48 0.676" quat="0.9239 -0.3827 0 0" material="vention_blue"/>
+      <geom type="box" size="0.614 0.411 0.023" pos="0 0 0.790" material="vention_blue"/>
+
+      <!-- bottom board -->
+      <geom type="box" size="0.602 0.399 0.005" pos="0 0 0.150" material="vention_black"/>
+      <geom type="box" size="0.604 0.401 0.023" pos="0 0 0.124" material="vention_blue"/>
+
+      <!-- collision (box top at world z=0.824; pieces rest on it) -->
+      <geom type="box" size="0.604 0.401 0.411" pos="0 0 0.413" class="vention_collision"/>
+    </body>
+
+    <!-- ─── Tangram pieces (6-DOF free joints; arm-driven via weld) ─── -->
+    <body name="big_triangle_1" pos="0.05 -0.20 0.825" childclass="tangram_visual">
+      <geom name="g_big_triangle_1" type="mesh" mesh="big_triangle_1" rgba="0.9 0.3 0.3 1"/>
+      <geom type="mesh" mesh="big_triangle_1_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c12" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c13" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c14" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_1_c15" class="tangram_collision"/>
+      <joint name="big_triangle_1_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="big_triangle_2" pos="0.05 0.00 0.825" childclass="tangram_visual">
+      <geom name="g_big_triangle_2" type="mesh" mesh="big_triangle_2" rgba="0.3 0.5 0.9 1"/>
+      <geom type="mesh" mesh="big_triangle_2_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c12" class="tangram_collision"/>
+      <geom type="mesh" mesh="big_triangle_2_c13" class="tangram_collision"/>
+      <joint name="big_triangle_2_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="middle_triangle" pos="0.05 0.20 0.825" childclass="tangram_visual">
+      <geom name="g_middle_triangle" type="mesh" mesh="middle_triangle" rgba="0.8 0.4 0.8 1"/>
+      <geom type="mesh" mesh="middle_triangle_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="middle_triangle_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="middle_triangle_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="middle_triangle_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="middle_triangle_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="middle_triangle_c5" class="tangram_collision"/>
+      <joint name="middle_triangle_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="small_triangle_1" pos="0.22 -0.20 0.825" childclass="tangram_visual">
+      <geom name="g_small_triangle_1" type="mesh" mesh="small_triangle_1" rgba="0.95 0.65 0.2 1"/>
+      <geom type="mesh" mesh="small_triangle_1_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c12" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c13" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c14" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c15" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c16" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c17" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c18" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c19" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_1_c20" class="tangram_collision"/>
+      <joint name="small_triangle_1_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="small_triangle_2" pos="0.22 0.00 0.825" childclass="tangram_visual">
+      <geom name="g_small_triangle_2" type="mesh" mesh="small_triangle_2" rgba="0.25 0.8 0.7 1"/>
+      <geom type="mesh" mesh="small_triangle_2_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c12" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c13" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c14" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c15" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c16" class="tangram_collision"/>
+      <geom type="mesh" mesh="small_triangle_2_c17" class="tangram_collision"/>
+      <joint name="small_triangle_2_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="square" pos="0.22 0.20 0.825" childclass="tangram_visual">
+      <geom name="g_square" type="mesh" mesh="square" rgba="0.4 0.8 0.4 1"/>
+      <geom type="mesh" mesh="square_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="square_c12" class="tangram_collision"/>
+      <joint name="square_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+    <body name="parallelogram" pos="0.35 0.00 0.825" childclass="tangram_visual">
+      <geom name="g_parallelogram" type="mesh" mesh="parallelogram" rgba="0.3 0.7 0.8 1"/>
+      <geom type="mesh" mesh="parallelogram_c0" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c1" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c2" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c3" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c4" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c5" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c6" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c7" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c8" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c9" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c10" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c11" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c12" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c13" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c14" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c15" class="tangram_collision"/>
+      <geom type="mesh" mesh="parallelogram_c16" class="tangram_collision"/>
+      <joint name="parallelogram_free" type="free" armature="0.01" damping="0.05"/>
+    </body>
+
+    <!-- ─── Mocap target ghosts (pose set at runtime via data.mocap_pos / mocap_quat) ─── -->
+    <body name="target_big_triangle_1" mocap="true" pos="0.45 -0.24 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="big_triangle_1" rgba="0.9 0.3 0.3 0.3" contype="0" conaffinity="0"/>
+      <site name="target_big_triangle_1" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_big_triangle_2" mocap="true" pos="0.45 -0.16 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="big_triangle_2" rgba="0.3 0.5 0.9 0.3" contype="0" conaffinity="0"/>
+      <site name="target_big_triangle_2" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_middle_triangle" mocap="true" pos="0.45 -0.08 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="middle_triangle" rgba="0.8 0.4 0.8 0.3" contype="0" conaffinity="0"/>
+      <site name="target_middle_triangle" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_small_triangle_1" mocap="true" pos="0.45 0.00 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="small_triangle_1" rgba="0.95 0.65 0.2 0.3" contype="0" conaffinity="0"/>
+      <site name="target_small_triangle_1" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_small_triangle_2" mocap="true" pos="0.45 0.08 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="small_triangle_2" rgba="0.25 0.8 0.7 0.3" contype="0" conaffinity="0"/>
+      <site name="target_small_triangle_2" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_square" mocap="true" pos="0.45 0.16 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="square" rgba="0.4 0.8 0.4 0.3" contype="0" conaffinity="0"/>
+      <site name="target_square" pos="0 0 0" size="0.001"/>
+    </body>
+    <body name="target_parallelogram" mocap="true" pos="0.45 0.24 0.825" quat="1 0 0 0">
+      <geom type="mesh" mesh="parallelogram" rgba="0.3 0.7 0.8 0.3" contype="0" conaffinity="0"/>
+      <site name="target_parallelogram" pos="0 0 0" size="0.001"/>
+    </body>
   </worldbody>
+
+<equality>
+  <weld name="ee_to_piece_0" body1="hand" body2="big_triangle_1"   active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_1" body1="hand" body2="big_triangle_2"   active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_2" body1="hand" body2="middle_triangle"  active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_3" body1="hand" body2="small_triangle_1" active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_4" body1="hand" body2="small_triangle_2" active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_5" body1="hand" body2="square"           active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+  <weld name="ee_to_piece_6" body1="hand" body2="parallelogram"    active="false" solref="0.02 1" solimp="0.95 0.99 0.001 0.5 2"/>
+</equality>
+
+  <keyframe>
+    <!-- Full composed qpos: 7 arm joints + 7 tangram free joints (7 each = pos xyz + quat wxyz).
+         Piece poses match their body spawn positions above. ctrl = 7 arm motors. -->
+    <key name="home"
+         qpos="0.0 -0.7853 0.0 -2.3561 0.0 1.5708 0.7853
+               0.05 -0.20 0.825 1 0 0 0
+               0.05  0.00 0.825 1 0 0 0
+               0.05  0.20 0.825 1 0 0 0
+               0.22 -0.20 0.825 1 0 0 0
+               0.22  0.00 0.825 1 0 0 0
+               0.22  0.20 0.825 1 0 0 0
+               0.35  0.00 0.825 1 0 0 0"
+         ctrl="0 0 0 0 0 0 0"/>
+  </keyframe>
+
 </mujoco>

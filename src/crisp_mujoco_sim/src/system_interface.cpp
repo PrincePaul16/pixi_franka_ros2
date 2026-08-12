@@ -90,6 +90,26 @@ Simulator::CallbackReturn Simulator::on_init(const hardware_interface::HardwareI
     joint_idx++;
   }
 
+  // Block until the simulator has loaded the model and applied the home keyframe,
+  // then latch that home state into the exported buffers. Without this, controllers
+  // can activate before the first valid read and latch a zero/uninitialized pose,
+  // giving an intermittent wrong startup pose (only corrected once a cartesian
+  // command arrives).
+  {
+    const auto t0 = std::chrono::steady_clock::now();
+    while (!MuJoCoSimulator::getInstance().ready())
+    {
+      if (std::chrono::steady_clock::now() - t0 > std::chrono::seconds(10))
+      {
+        RCLCPP_ERROR(rclcpp::get_logger("Simulator"),
+                     "MuJoCo simulator did not become ready within 10s.");
+        return Simulator::CallbackReturn::ERROR;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+    MuJoCoSimulator::getInstance().read(m_positions, m_velocities, m_efforts);
+  }
+
   return Simulator::CallbackReturn::SUCCESS;
 }
 

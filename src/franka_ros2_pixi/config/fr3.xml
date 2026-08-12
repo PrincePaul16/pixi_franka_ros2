@@ -73,10 +73,13 @@
     <mesh name="hand_coll" file="hand.stl"/>
     <mesh file="finger_0.obj"/>
     <mesh file="finger_1.obj"/>
+
+    <mesh name="fr3_key" file="fr3_flange_key_v0.9.0.stl" scale="0.001 0.001 0.001"/>
   </asset>
 
   <worldbody>
-    <body name="base" childclass="fr3">
+    <!-- Base mounted on the Vention table, matching envs/panda.xml (link0 pos) -->
+    <body name="base" childclass="fr3" pos="-0.43 0 0.824">
       <body name="fr3_link0">
         <geom mesh="link0_0" material="black" class="visual"/>
         <geom mesh="link0_1" material="white" class="visual"/>
@@ -144,28 +147,15 @@
                       <geom name="fr3_link7_collision" class="collision" mesh="link7_coll"/>
                       <site name="attachment_site" pos="0 0 0.107"/>
                       <!-- Hand/Gripper (rotated 45° around z to match URDF) -->
-                      <body name="fr3_hand" pos="0 0 0.107" quat="0.9238795 0 0 0.3826834">
-                        <inertial pos="0 0.0015244 0.0275912" quat="0.70652 0.0176669 0.0176669 0.70711" mass="0.73" diaginertia="0.00278 0.00269 0.000522"/>
-                        <geom mesh="hand_0" material="white" class="visual"/>
-                        <geom mesh="hand_1" material="white" class="visual"/>
-                        <geom mesh="hand_2" material="white" class="visual"/>
-                        <geom mesh="hand_3" material="black" class="visual"/>
-                        <geom mesh="hand_4" material="black" class="visual"/>
-                        <geom name="fr3_hand_collision" class="collision" mesh="hand_coll"/>
-                        <site name="hand_tcp" pos="0 0 0.1034"/>
-                        <!-- Left finger -->
-                        <body name="fr3_leftfinger" pos="0 0 0.0584">
-                          <inertial pos="0 0.0145644 0.0227941" quat="0.660363 0.660363 -0.254562 0.254562" mass="0.015" diaginertia="2.39e-06 2.24e-06 6.12e-07"/>
-                          <joint name="fr3_finger_joint1" type="slide" axis="0 1 0" range="0 0.04" damping="100"/>
-                          <geom mesh="finger_0" material="white" class="visual"/>
-                          <geom mesh="finger_1" material="black" class="visual"/>
-                        </body>
-                        <!-- Right finger -->
-                        <body name="fr3_rightfinger" pos="0 0 0.0584" quat="0 0 0 1">
-                          <inertial pos="0 0.0145644 0.0227941" quat="0.660363 0.660363 -0.254562 0.254562" mass="0.015" diaginertia="2.39e-06 2.24e-06 6.12e-07"/>
-                          <joint name="fr3_finger_joint2" type="slide" axis="0 -1 0" range="0 0.04" damping="100"/>
-                          <geom mesh="finger_0" material="white" class="visual" euler="0 0 3.14159"/>
-                          <geom mesh="finger_1" material="black" class="visual" euler="0 0 3.14159"/>
+                      <!-- FR3 custom key end-effector mounted at the flange interface.
+                         Same mesh used for visual + collision. TCP placed at the tip of the key. -->
+                      <body name="hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+                        <inertial mass="0.2" pos="0 0 0.05" diaginertia="2e-4 2e-4 5e-5"/>
+                        <geom mesh="fr3_key" material="black" class="visual"/>
+                        <geom mesh="fr3_key" class="collision"/>
+                        <!-- TCP at the key tip (103 mm along +z in the flange frame). -->
+                        <body name="hand_tcp" pos="0 0 0.103">
+                          <inertial mass="1e-6" pos="0 0 0" diaginertia="1e-9 1e-9 1e-9"/>
                         </body>
                       </body>
                     </body>
@@ -194,12 +184,9 @@
     <motor name="fr3_joint5_motor" gear="1" joint="fr3_joint5" ctrlrange="-100 100"/>
     <motor name="fr3_joint6_motor" gear="1" joint="fr3_joint6" ctrlrange="-100 100"/>
     <motor name="fr3_joint7_motor" gear="1" joint="fr3_joint7" ctrlrange="-100 100"/>
-    <!-- Gripper actuator (only finger_joint1, finger_joint2 mimics in URDF) -->
-    <motor name="fr3_finger_joint1_motor" gear="1" joint="fr3_finger_joint1" ctrlrange="-20 20"/>
+    <!-- Gripper removed: flange key end-effector has no finger joints -->
   </actuator>
 
-  <keyframe>
-    <!-- qpos: 7 arm joints + 2 finger joints (0.04 = fully open) -->
-    <key name="home" qpos="0.0 -0.7853 0.0 -2.3561 0.0 1.5708 0.7853 0.04 0.04" ctrl="0 0 0 0 0 0 0 0"/>
-  </keyframe>
+  <!-- keyframe moved to scene.xml: the composed scene adds tangram free joints,
+       so the full-length 'home' key must live where those bodies are defined. -->
 </mujoco>

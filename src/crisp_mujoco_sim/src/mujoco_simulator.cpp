@@ -4,8 +4,6 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
-#include <thread>
-#include <GLFW/glfw3.h>
 #include <rclcpp/duration.hpp>
 #include <rclcpp/logger.hpp>
 #include <rclcpp/logging.hpp>
@@ -63,19 +61,18 @@ int MuJoCoSimulator::simulateImpl(const std::string & model_xml)
   vel_state.resize(m->nu);
   eff_state.resize(m->nu);
 
-  eff_cmd.resize(m->nv);
-
-  // Full-state snapshot for the independent render thread.
-  qpos_render.resize(m->nq);
+  // Size the command buffer to the number of actuators (d->ctrl is nu-sized),
+  // NOT nv: with unactuated DOF (e.g. free-joint tangram pieces) nv > nu, and
+  // writing eff_cmd into d->ctrl would overrun the ctrl array.
+  eff_cmd.resize(m->nu);
 
   RCLCPP_INFO_STREAM(logger, "Syncing states.");
   syncStates();
   state_mutex.unlock();
 
-  // Spawn the viewer on its own thread with its own GL context + mjData copy.
-  // It only reads qpos_render (under state_mutex), so it never disturbs the
-  // realtime control loop below.
-  std::thread(&MuJoCoSimulator::renderLoop, this).detach();
+  // Model loaded, home keyframe applied, state buffers populated: safe for the
+  // hardware interface to start exposing joint states now.
+  sim_ready = true;
 
   // Connect our specific control input callback for MuJoCo's engine.
   mjcb_control = MuJoCoSimulator::controlCB;
@@ -128,9 +125,17 @@ void MuJoCoSimulator::read(std::vector<double> & pos, std::vector<double> & vel,
 {
   if (state_mutex.try_lock())
   {
-    pos = pos_state;
-    vel = vel_state;
-    eff = eff_state;
+    // Only publish once the sim thread has actually populated the buffers.
+    // During startup the sim thread may have begun but not yet loaded the model
+    // (pos_state still empty); copying it would clobber the caller's home-seeded
+    // state with garbage, which the active controller can latch as its target
+    // -> intermittent "wrong pose on launch". Skip until sizes match.
+    if (pos_state.size() == pos.size())
+    {
+      pos = pos_state;
+      vel = vel_state;
+      eff = eff_state;
+    }
     state_mutex.unlock();
   }
 }
@@ -152,72 +157,6 @@ void MuJoCoSimulator::syncStates()
     vel_state[i] = d->qvel[i];
     eff_state[i] = d->qfrc_actuator[i];
   }
-  // Full-state snapshot so the render thread can reconstruct all body poses.
-  mju_copy(qpos_render.data(), d->qpos, m->nq);
-}
-
-void MuJoCoSimulator::renderLoop()
-{
-  rclcpp::Logger logger = rclcpp::get_logger("MuJoCoSimulator");
-
-  if (!glfwInit())
-  {
-    RCLCPP_ERROR(logger, "Could not initialize GLFW; running headless.");
-    return;
-  }
-
-  GLFWwindow * window = glfwCreateWindow(1200, 900, "crisp_mujoco_sim", nullptr, nullptr);
-  if (!window)
-  {
-    RCLCPP_ERROR(logger, "Could not create GLFW window; running headless.");
-    glfwTerminate();
-    return;
-  }
-  glfwMakeContextCurrent(window);
-  glfwSwapInterval(1);  // vsync is fine: this thread is independent of control.
-
-  // Own visualization structures and an own mjData so we never touch the sim's.
-  mjvCamera cam;
-  mjvOption opt;
-  mjvScene scn;
-  mjrContext con;
-  mjv_defaultCamera(&cam);
-  mjv_defaultOption(&opt);
-  mjv_defaultScene(&scn);
-  mjr_defaultContext(&con);
-  mjv_makeScene(m, &scn, 2000);
-  mjr_makeContext(m, &con, mjFONTSCALE_150);
-
-  mjData * d_render = mj_makeData(m);
-
-  while (!glfwWindowShouldClose(window))
-  {
-    // Grab the latest joint state from the sim thread.
-    state_mutex.lock();
-    mju_copy(d_render->qpos, qpos_render.data(), m->nq);
-    state_mutex.unlock();
-
-    // Reconstruct world-frame body/geom poses (xpos/xmat/geom_xpos) from qpos.
-    // Use mj_kinematics (NOT mj_forward): mj_forward would re-run the global
-    // mjcb_control callback + full constraint solver on this thread, contending
-    // for command_mutex with the 1000 Hz control loop. Kinematics is all the
-    // renderer needs and touches nothing the sim thread uses.
-    mj_kinematics(m, d_render);
-
-    mjrRect viewport = {0, 0, 0, 0};
-    glfwGetFramebufferSize(window, &viewport.width, &viewport.height);
-    mjv_updateScene(m, d_render, &opt, nullptr, &cam, mjCAT_ALL, &scn);
-    mjr_render(viewport, &scn, &con);
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
-
-  mj_deleteData(d_render);
-  mjr_freeContext(&con);
-  mjv_freeScene(&scn);
-  glfwDestroyWindow(window);
-  glfwTerminate();
 }
 
 }  // namespace crisp_mujoco_sim

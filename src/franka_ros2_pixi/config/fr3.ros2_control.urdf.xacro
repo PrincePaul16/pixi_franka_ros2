@@ -58,9 +58,7 @@
       <xacro:configure_joint joint_name="${arm_prefix_modified}${arm_id}_joint6" initial_position="${pi/2}"/>
       <xacro:configure_joint joint_name="${arm_prefix_modified}${arm_id}_joint7" initial_position="${pi/4}"/>
 
-      <!-- Gripper finger joint (0.04 = fully open) -->
-      <!-- Note: finger_joint2 is a mimic joint in URDF, so only finger_joint1 needs control -->
-      <xacro:configure_joint joint_name="${arm_prefix_modified}${arm_id}_finger_joint1" initial_position="0.04"/>
+      <!-- Gripper removed: flange key end-effector, 7 arm joints only -->
 
     </ros2_control>
   </xacro:macro>

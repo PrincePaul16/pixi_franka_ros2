@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdio>
 #include <cstring>
 #include <mutex>
@@ -43,12 +44,15 @@ public:
   std::vector<double> vel_state;
   std::vector<double> eff_state;
 
-  // Full joint-position snapshot (size nq), updated under state_mutex, read by the render thread
-  std::vector<double> qpos_render;
-
   // Safety guards for buffers
   std::mutex state_mutex;
   std::mutex command_mutex;
+
+  // True once the model is loaded, the home keyframe applied, and the state
+  // buffers first populated. Lets the hardware interface wait before exposing
+  // joint states, so controllers never activate from an uninitialized pose.
+  std::atomic<bool> sim_ready{false};
+  bool ready() const { return sim_ready.load(); }
 
   // Control input callback for the solver
   static void controlCB(const mjModel * m, mjData * d);
@@ -58,9 +62,6 @@ public:
   // Call this in a separate thread
   static int simulate(const std::string & model_xml);
   int simulateImpl(const std::string & model_xml);
-
-  // Independent viewer thread: own GL context + own mjData copy; never touches the sim/control loop.
-  void renderLoop();
 
   // Non-blocking
   void read(std::vector<double> & pos, std::vector<double> & vel, std::vector<double> & eff);

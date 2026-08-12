@@ -61,6 +61,7 @@ franka-sim = "ros2 launch franka_ros2_pixi franka_mujoco.launch.py"
 [feature.crisp.tasks]
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
 crisp-teleop = "python examples/crisp_teleop.py"
+mujoco-viewer = "python examples/mujoco_passive_viewer.py"
 
 [feature.dev.pypi-dependencies]
 ruff= "*"

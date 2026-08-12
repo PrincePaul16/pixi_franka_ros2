@@ -8,8 +8,9 @@
   <!-- Don't print a prefix for joints, visuals, and links? -->
   <xacro:arg name="no_prefix" default="false"/>
 
-  <!-- Should an end-effector be mounted at the flange?" -->
-  <xacro:arg name="load_gripper" default="true" />
+  <!-- Should the franka gripper be mounted at the flange? Default false:
+       this robot uses the custom flange-key end-effector (see below). -->
+  <xacro:arg name="load_gripper" default="false" />
 
   <!-- Which end-effector would be mounted at the flange?" -->
   <xacro:arg name="ee_id" default="franka_hand" />
@@ -47,6 +48,51 @@
     arm_prefix="$(arg arm_prefix)"
     hand="$(arg load_gripper)"
   />
+
+  <!-- Custom flange-key end-effector (added when the franka gripper is NOT loaded).
+       Mirrors the MJCF 'hand' body in config/fr3.xml exactly so the CRISP controller's
+       Pinocchio model matches what MuJoCo simulates:
+         - mounted at the flange (fr3_link7 + 0.107 z) with the -45 deg key rotation
+         - mass 0.2 kg, CoM 0.05 m out along the key
+         - fr3_flange_key_tcp at the key tip (+0.103 z) = MJCF hand_tcp
+       Set end_effector_frame: fr3_flange_key_tcp in controllers.yaml. -->
+  <xacro:unless value="$(arg load_gripper)">
+    <link name="fr3_flange_key">
+      <inertial>
+        <origin xyz="0 0 0.05" rpy="0 0 0"/>
+        <mass value="0.2"/>
+        <inertia ixx="2e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="5e-5"/>
+      </inertial>
+      <!-- Same STL + mm->m scale as the MJCF geom; link frame == MJCF hand frame,
+           so the mesh sits at identity here. -->
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://franka_ros2_pixi/config/assets/fr3_flange_key_v0.9.0.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="fr3_flange_key_black">
+          <color rgba="0.2 0.2 0.2 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://franka_ros2_pixi/config/assets/fr3_flange_key_v0.9.0.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="fr3_flange_key_joint" type="fixed">
+      <origin xyz="0 0 0.107" rpy="0 0 -0.785398163397"/>
+      <parent link="fr3_link7"/>
+      <child link="fr3_flange_key"/>
+    </joint>
+    <link name="fr3_flange_key_tcp"/>
+    <joint name="fr3_flange_key_tcp_joint" type="fixed">
+      <origin xyz="0 0 0.103" rpy="0 0 0"/>
+      <parent link="fr3_flange_key"/>
+      <child link="fr3_flange_key_tcp"/>
+    </joint>
+  </xacro:unless>
 
 </robot>
 
