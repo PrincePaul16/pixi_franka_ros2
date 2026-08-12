@@ -43,6 +43,9 @@ public:
   std::vector<double> vel_state;
   std::vector<double> eff_state;
 
+  // Full joint-position snapshot (size nq), updated under state_mutex, read by the render thread
+  std::vector<double> qpos_render;
+
   // Safety guards for buffers
   std::mutex state_mutex;
   std::mutex command_mutex;
@@ -55,6 +58,9 @@ public:
   // Call this in a separate thread
   static int simulate(const std::string & model_xml);
   int simulateImpl(const std::string & model_xml);
+
+  // Independent viewer thread: own GL context + own mjData copy; never touches the sim/control loop.
+  void renderLoop();
 
   // Non-blocking
   void read(std::vector<double> & pos, std::vector<double> & vel, std::vector<double> & eff);

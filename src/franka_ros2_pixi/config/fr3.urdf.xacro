@@ -19,20 +19,11 @@
              "
     >
   <xacro:property name="arm_prefix_modified" value="${'' if arm_prefix == '' else arm_prefix + '_'}" />
-  <xacro:franka_robot arm_id="${arm_id}"
-                      joint_limits="${xacro.load_yaml('$(find franka_description)/robots/fr3/joint_limits.yaml')}"
-                      inertials="${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')}"
-                      kinematics="${xacro.load_yaml('$(find franka_description)/robots/fr3/kinematics.yaml')}"
-                      dynamics="${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')}"
+  <xacro:franka_robot robot_type="${arm_id}"
                       gazebo="${gazebo}"
                       hand="${hand}"
                       ee_id="${ee_id}"
                       with_sc="${with_sc}"
-                      ros2_control="false"
-                      robot_ip="${robot_ip}"
-                      use_fake_hardware="${use_fake_hardware}"
-                      fake_sensor_commands="${fake_sensor_commands}"
-                      gazebo_effort="${gazebo_effort}"
                       no_prefix="${no_prefix}"
                       arm_prefix="${arm_prefix}"
                       connected_to="${arm_prefix_modified}base">
