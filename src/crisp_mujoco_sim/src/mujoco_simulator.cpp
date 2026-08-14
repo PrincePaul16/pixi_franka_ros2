@@ -120,16 +120,11 @@ int MuJoCoSimulator::simulateImpl(const std::string & model_xml)
   return 0;
 }
 
-void MuJoCoSimulator::read(std::vector<double> & pos, std::vector<double> & vel,
-                           std::vector<double> & eff)
+void MuJoCoSimulator::read(std::vector<double> & pos, std::vector<double> & vel, std::vector<double> & eff)
 {
   if (state_mutex.try_lock())
   {
     // Only publish once the sim thread has actually populated the buffers.
-    // During startup the sim thread may have begun but not yet loaded the model
-    // (pos_state still empty); copying it would clobber the caller's home-seeded
-    // state with garbage, which the active controller can latch as its target
-    // -> intermittent "wrong pose on launch". Skip until sizes match.
     if (pos_state.size() == pos.size())
     {
       pos = pos_state;
@@ -156,6 +151,19 @@ void MuJoCoSimulator::syncStates()
     pos_state[i] = d->qpos[i];
     vel_state[i] = d->qvel[i];
     eff_state[i] = d->qfrc_actuator[i];
+  }
+}
+
+void MuJoCoSimulator::readFullState(std::vector<double> &qpos, std::vector<double> &qvel)
+{
+  if (state_mutex.try_lock())
+  {
+    if (m != nullptr && d != nullptr)
+    {
+      qpos.assign(d->qpos, d->qpos + m->nq);
+      qvel.assign(d->qvel, d->qvel + m->nv);
+    }
+    state_mutex.unlock();
   }
 }
 

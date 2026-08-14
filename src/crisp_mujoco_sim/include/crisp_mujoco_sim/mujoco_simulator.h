@@ -66,6 +66,8 @@ public:
   // Non-blocking
   void read(std::vector<double> & pos, std::vector<double> & vel, std::vector<double> & eff);
   void write(const std::vector<double> & eff);
+
+  void readFullState(std::vector<double> &qpos, std::vector<double> &qvel);
 };
 
 }  // namespace crisp_mujoco_sim

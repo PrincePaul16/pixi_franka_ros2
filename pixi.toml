@@ -22,7 +22,7 @@ libgl-devel = "*"
 
 [environments]
 jazzy = { features = ["jazzy", "dev", "extra"] }
-jazzy-crisp = { features = ["jazzy", "dev", "extra", "crisp"] }
+jazzy-crisp = { features = ["jazzy", "dev", "extra", "crisp", "policy"] }
 
 # jazzy
 [feature.jazzy]
@@ -77,3 +77,8 @@ matplotlib = "*"  # to do some plots
 
 [feature.crisp.pypi-dependencies]
 crisp-python = ">=3.0.0,<4"
+
+[feature.policy.pypi-dependencies]
+jax = "*"          # CPU jaxlib. For GPU use instead: jax = { version = "*", extras = ["cuda12"] }
+equinox = "*"
+jraph = "*"

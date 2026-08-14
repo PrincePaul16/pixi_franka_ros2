@@ -90,25 +90,23 @@ Simulator::CallbackReturn Simulator::on_init(const hardware_interface::HardwareI
     joint_idx++;
   }
 
-  // Block until the simulator has loaded the model and applied the home keyframe,
-  // then latch that home state into the exported buffers. Without this, controllers
-  // can activate before the first valid read and latch a zero/uninitialized pose,
-  // giving an intermittent wrong startup pose (only corrected once a cartesian
-  // command arrives).
+  // Block until the simulator has loaded the model and applied the home keyframe
   {
     const auto t0 = std::chrono::steady_clock::now();
     while (!MuJoCoSimulator::getInstance().ready())
     {
       if (std::chrono::steady_clock::now() - t0 > std::chrono::seconds(10))
       {
-        RCLCPP_ERROR(rclcpp::get_logger("Simulator"),
-                     "MuJoCo simulator did not become ready within 10s.");
+        RCLCPP_ERROR(rclcpp::get_logger("Simulator"), "MuJoCo simulator did not become ready within 10s.");
         return Simulator::CallbackReturn::ERROR;
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(2));
     }
     MuJoCoSimulator::getInstance().read(m_positions, m_velocities, m_efforts);
   }
+
+  m_state_node = std::make_shared<rclcpp::Node>("crisp_mujoco_sim_state_node_pub");
+  m_state_pub = m_state_node->create_publisher<std_msgs::msg::Float64MultiArray>("mujoco/state", 10);
 
   return Simulator::CallbackReturn::SUCCESS;
 }
@@ -148,16 +146,33 @@ Simulator::return_type Simulator::prepare_command_mode_switch(
   return return_type::OK;
 }
 
-Simulator::return_type Simulator::read([[maybe_unused]] const rclcpp::Time & time,
-                                       [[maybe_unused]] const rclcpp::Duration & period)
+Simulator::return_type Simulator::read([[maybe_unused]] const rclcpp::Time & time, [[maybe_unused]] const rclcpp::Duration & period)
 {
   /*RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger("Simulator"), *clock, 1000, "Reading state values" << m_positions[0]);*/
   MuJoCoSimulator::getInstance().read(m_positions, m_velocities, m_efforts);
+
+  // Publish the full state for visualization and policy
+  if (++m_pub_counter >= m_pub_decimation)
+  {
+    m_pub_counter = 0;
+    MuJoCoSimulator::getInstance().readFullState(m_full_qpos, m_full_qvel);
+    if (!m_full_qpos.empty() && m_state_pub)
+    {
+      std_msgs::msg::Float64MultiArray msg;
+      msg.layout.dim.resize(2);
+      msg.layout.dim[0].label = "qpos"; msg.layout.dim[0].size = m_full_qpos.size();
+      msg.layout.dim[1].label = "qvel"; msg.layout.dim[1].size = m_full_qvel.size();
+      msg.data.reserve(m_full_qpos.size() + m_full_qvel.size());
+      msg.data.insert(msg.data.end(), m_full_qpos.begin(), m_full_qpos.end());
+      msg.data.insert(msg.data.end(), m_full_qvel.begin(), m_full_qvel.end());
+      m_state_pub->publish(msg);
+    }
+  }
+
   return return_type::OK;
 }
 
-Simulator::return_type Simulator::write([[maybe_unused]] const rclcpp::Time & time,
-                                        [[maybe_unused]] const rclcpp::Duration & period)
+Simulator::return_type Simulator::write([[maybe_unused]] const rclcpp::Time & time, [[maybe_unused]] const rclcpp::Duration & period)
 {
   /*RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger("Simulator"), *clock, 1000, "Writing effort commands" << m_effort_commands[0]);*/
   MuJoCoSimulator::getInstance().write(m_effort_commands);
@@ -168,5 +183,4 @@ Simulator::return_type Simulator::write([[maybe_unused]] const rclcpp::Time & ti
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(crisp_mujoco_sim::Simulator,
-                       hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(crisp_mujoco_sim::Simulator, hardware_interface::SystemInterface)

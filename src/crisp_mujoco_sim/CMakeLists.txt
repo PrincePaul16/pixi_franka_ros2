@@ -21,6 +21,8 @@ find_package(rclcpp REQUIRED)
 
 find_package(mujoco REQUIRED)
 
+find_package(std_msgs REQUIRED)
+
 # --------------------------------------------------------------------------------
 # Make sure that library relocation works for both build and install.
 # See here: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
@@ -53,6 +55,7 @@ ament_target_dependencies(${PROJECT_NAME}
         hardware_interface
         pluginlib
         rclcpp
+        std_msgs
 )
 
 target_link_libraries(${PROJECT_NAME}

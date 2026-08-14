@@ -11,7 +11,7 @@ import mujoco.viewer
 import rclpy
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
-from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64MultiArray
 
 
 class PassiveViewerNode(Node):
@@ -20,22 +20,14 @@ class PassiveViewerNode(Node):
         self.m = model
         self.d = data
 
-        # Map joint name -> qpos address so we can place each published joint,
-        # regardless of ordering in the JointState message.
-        self.qadr = {}
-        for jid in range(model.njnt):
-            name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, jid)
-            if name:
-                self.qadr[name] = int(model.jnt_qposadr[jid])
+        self.create_subscription(Float64MultiArray, "/mujoco/state", self._on_state, 10)
+        self.get_logger().info("Passive viewer subscribed to /mujoco/state")
 
-        self.create_subscription(JointState, "/joint_states", self._on_joint_states, 10)
-        self.get_logger().info("Passive viewer subscribed to /joint_states")
-
-    def _on_joint_states(self, msg: JointState):
-        for name, pos in zip(msg.name, msg.position):
-            adr = self.qadr.get(name)
-            if adr is not None:
-                self.d.qpos[adr] = pos
+    def _on_state(self, msg: Float64MultiArray):
+        nq, nv = self.m.nq, self.m.nv
+        if (len(msg.data) >= nq + nv):
+            self.d.qpos[:] = msg.data[:nq]
+            self.d.qvel[:] = msg.data[nq: nq+nv]
 
 
 def main():
@@ -54,7 +46,6 @@ def main():
 
     try:
         with mujoco.viewer.launch_passive(model, data) as viewer:
-            # Match the thesis viewer camera (robot_simulation.py).
             viewer.cam.lookat[:] = [0.0, 0.0, 0.95]
             viewer.cam.distance = 2.2
             viewer.cam.azimuth = 135

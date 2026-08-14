@@ -12,6 +12,9 @@
 #include "rclcpp/macros.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/float64_multi_array.hpp"
+
 namespace crisp_mujoco_sim
 {
 
@@ -52,6 +55,13 @@ private:
 
   // Parameters
   std::string m_mujoco_model;
+
+  // State-Publisher for simulation (viewer and policy)
+  rclcpp::Node::SharedPtr m_state_node;
+  rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr m_state_pub;
+  std::vector<double> m_full_qpos, m_full_qvel;
+  int m_pub_decimation{10}; 
+  int m_pub_counter{0};
 };
 
 }  // namespace crisp_mujoco_sim
