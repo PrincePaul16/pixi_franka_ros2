@@ -38,6 +38,21 @@ def generate_launch_description():
         )
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "use_fake_hardware",
+            default_value="true",
+            description="true -> MuJoCo (crisp_mujoco_sim); false -> real FR3 (franka_hardware).",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "robot_ip",
+            default_value="172.16.0.2",
+            description="IP of the real robot (only used when use_fake_hardware:=false).",
+        )
+    )
+
     start_rviz = LaunchConfiguration("start_rviz")
 
     # Get URDF via xacro
@@ -52,7 +67,9 @@ def generate_launch_description():
                     "fr3_single.urdf.xacro",
                 ]
             ),
-            " use_fake_hardware:=true",
+            " use_fake_hardware:=", LaunchConfiguration("use_fake_hardware"),
+            " robot_ip:=", LaunchConfiguration("robot_ip"),
+            " load_gripper:=false",
         ]
     )
     robot_description = {

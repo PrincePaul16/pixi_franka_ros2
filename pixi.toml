@@ -57,6 +57,7 @@ clone-crisp = "git clone https://github.com/utiasdsl/crisp_controllers.git src/c
 setup = { depends-on = ["clone", "update-libfranka", "apply-patches", "ignore-gazebo", "build"] }
 franka = "ros2 launch scripts/launch/franka.launch.py"
 franka-sim = "ros2 launch franka_ros2_pixi franka_mujoco.launch.py"
+franka-real = "ros2 launch franka_ros2_pixi franka_mujoco.launch.py use_fake_hardware:=false"
 
 [feature.crisp.tasks]
 crisp-figure-eight = "python examples/crisp_figure_eight.py"
