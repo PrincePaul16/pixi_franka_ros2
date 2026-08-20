@@ -22,7 +22,13 @@ libgl-devel = "*"
 
 [environments]
 jazzy = { features = ["jazzy", "dev", "extra"] }
-jazzy-crisp = { features = ["jazzy", "dev", "extra", "crisp", "policy"] }
+
+[environments.jazzy-crisp]
+features = ["jazzy", "dev", "extra", "crisp", "policy"]
+
+[environments.jazzy-crisp.dependencies]
+ros-jazzy-tf-transformations = ">=1.1.0,<2"
+transforms3d = ">=0.4.2,<0.5"
 
 # jazzy
 [feature.jazzy]
@@ -75,6 +81,8 @@ pytest = "*"  # for testing
 [feature.extra.pypi-dependencies]
 rich = "*"  # For nice prints
 matplotlib = "*"  # to do some plots
+trimesh = "*"  # STL loading for tangram_pose_debug.py PCA templates
+pyrealsense2 = "*"  # camera access for realsense_ros_publisher.py (custom driver node)
 
 [feature.crisp.pypi-dependencies]
 crisp-python = ">=3.0.0,<4"
