@@ -1,0 +1,29 @@
+digraph G {
+"fr3_link0" -> "fr3_link1"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"base" -> "fr3_link0"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link1" -> "fr3_link2"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link2" -> "fr3_link3"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link3" -> "fr3_link4"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link4" -> "fr3_link5"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link5" -> "fr3_link6"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link6" -> "fr3_link7"[label=" Broadcaster: default_authority\nAverage rate: 19.953\nBuffer length: 5.062\nMost recent transform: 1787142646.753087\nOldest transform: 1787142641.691096\n"];
+"fr3_link7" -> "fr3_flange_key"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_flange_key" -> "fr3_flange_key_tcp"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link7" -> "fr3_link8"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link0" -> "fr3_link0_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link0" -> "fr3_link0_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link1" -> "fr3_link1_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link1" -> "fr3_link1_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link2" -> "fr3_link2_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link2" -> "fr3_link2_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link3" -> "fr3_link3_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link3" -> "fr3_link3_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link4" -> "fr3_link4_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link4" -> "fr3_link4_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link5" -> "fr3_link5_accelerometer_bottom"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"fr3_link5" -> "fr3_link5_accelerometer_top"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1787142646.7636032"[ shape=plaintext ] ;
+}->"base";
+}

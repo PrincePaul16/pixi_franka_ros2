@@ -2,6 +2,29 @@
   controller_manager:
     ros__parameters:
       update_rate: 1000  # Hz
+      # Tried on 2026-09-10: thread_priority 80 + cpu_affinity 1 to lift the
+      # RT loop above the kernel's FIFO-50 interrupt threads. The very next
+      # driver start faulted 0.7 s in (communication_constraints_violation on
+      # every hardware activation), so it is off again. The interrupt problem
+      # is handled from the other side -- debug/yaw/deprioritise_camera_irqs.sh
+      # lowers the CAMERA controller's IRQ threads below 50.
+      # thread_priority: 80
+      # cpu_affinity: 1
+      #
+      # Second attempt (2026-09-10, evening): a core of its own, prepared by
+      # `sudo debug/yaw/isolate_cm_core.sh` (moves every interrupt off core
+      # 11 and its SMT sibling 23, bans them in irqbalance, puts the robot
+      # NIC's interrupt on 23). launch_fpose_stack.sh and robot_control.py
+      # keep our own processes off both. Priority stays at the default 50:
+      # nothing else is left on that core to compete with. If it faults on
+      # activation like the first attempt, comment cpu_affinity out again.
+      #
+      # Result: cpu_affinity pins the WHOLE process (30 threads, several at
+      # FIFO 99 from libfranka's priority inheritance) onto the core, and
+      # they preempt the FIFO-50 loop there -- overruns every few seconds.
+      # Off again; approach_hole.pin_driver_threads() pins the loop thread
+      # alone to core 11 and moves every other thread off it.
+      # cpu_affinity: 11
 
       joint_trajectory_controller:
         type: joint_trajectory_controller/JointTrajectoryController
@@ -11,6 +34,9 @@
 
       twist_broadcaster:
         type: crisp_controllers/TwistBroadcaster
+
+      franka_robot_state_broadcaster:
+        type: franka_robot_state_broadcaster/FrankaRobotStateBroadcaster
 
       pose_broadcaster:
         type: crisp_controllers/PoseBroadcaster
@@ -51,9 +77,17 @@
   joint_state_broadcaster:
     ros__parameters:
       use_local_topics: False
+      # Broadcasters at 100 Hz, not the loop's 1000 (2026-09-11). Every
+      # subscriber in robot_control.py is Python: crisp_py's pose, joint and
+      # twist callbacks, the robot-state callback and the TF listener that
+      # robot_state_publisher feeds from /joint_states. At 1 kHz each that is
+      # ~5000 Python callbacks a second in the process that also runs the
+      # policy and the hole detector -- both ran 15x slower than offline.
+      update_rate: 100
 
   twist_broadcaster:
     ros__parameters:
+      update_rate: 100
       joints:
         - fr3_joint1
         - fr3_joint2
@@ -68,6 +102,7 @@
 
   pose_broadcaster:
     ros__parameters:
+      update_rate: 100
       joints:
         - fr3_joint1
         - fr3_joint2
@@ -181,6 +216,26 @@
         k_rot_x: 30.0
         k_rot_y: 30.0
         k_rot_z: 30.0
+        # Cap the position error the spring acts on (default 0.1 m). robot_control
+        # raises k_pos to 1500 N/m; a setpoint that gets 7 cm away from the arm
+        # (a reflex mid-move, a stale target on re-activation) would otherwise
+        # pull with 100+ N. 3 cm x 1500 N/m = 45 N is enough to insert the peg
+        # and push a piece, and it is not a jump. Normal moves ramp the setpoint
+        # at 3 cm/s and never get near the clip.
+        error_clip:
+          x: 0.03
+          y: 0.03
+          z: 0.03
+          # k_rot stays at 30 Nm/rad (40 already made the wrist oscillate
+          # while aligning the peg, 2026-09-11); 0.4 rad x 30 = 12 Nm, the
+          # wrist joint's torque limit, so a yaw jump in the setpoint is
+          # followed at that torque and not more. (0.15 was sized for 80
+          # Nm/rad and would have capped the yaw torque at 4.5 Nm.)
+          rx: 0.4
+          ry: 0.4
+          rz: 0.4
+      limit_error: true
+      limit_torques: true
 
       nullspace: 
         stiffness: 2.0
@@ -212,3 +267,13 @@
       joint_source_topic: target_joint
       torque_threshold: 0.1
 
+  # Publishes franka_msgs/FrankaRobotState incl. control_command_success_rate
+  # -- the robot's OWN count of late/lost 1 kHz packets, which is what the
+  # communication_constraints_violation reflex is judged on. Added 2026-09-10
+  # to find out whether packets are lost steadily between reflexes.
+  franka_robot_state_broadcaster:
+    ros__parameters:
+      arm_id: fr3
+      update_rate: 100
+      convenience_publish_rate: 100
+      frequency: 30
